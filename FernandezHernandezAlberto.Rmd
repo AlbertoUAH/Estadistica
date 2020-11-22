@@ -126,7 +126,7 @@ desv.tipica <- sd(datos.estatura[, "estatura"]) *
 desv.tipica
 ```
 
-Analizando el resultado obtenido, podemos comprobar como la dispersión de las medidas con respecto a la media es de unos centímetros de diferencia. No obstante, si realizamos un gráfico de densidad y lo comparamos con el de una distribución normal con la media y desviación típica obtenidas, vemos que muchas de las estaturas no se concentran en torno a la media, sino que observamos una mayor "concentración" de valores en torno a estaturas más bajas y más altas, correspondientes con los valores de la moda obtenidos anteriormente. Por el contrario, la densidad al aproximarse a la media (1.25) es menor, por lo que no parece ser __un valor representativo de la muestra__:
+Analizando el resultado obtenido, podemos comprobar como la dispersión de las medidas con respecto a la media es de unos centímetros de diferencia. No obstante, si realizamos un gráfico de densidad y lo comparamos con el de una distribución normal con la media y desviación típica obtenidas, vemos que muchas de las estaturas no se concentran en torno a la media, sino que observamos una mayor "concentración" de valores en torno a estaturas más bajas y más altas, correspondientes con los valores de la moda obtenidos anteriormente (en torno a 1.21, 1.22 y 1.28 metros). Por el contrario, la densidad al aproximarse a la media (1.25) es menor, por lo que no parece ser __un valor representativo de la muestra__:
 
 ```{r grafico_densidad, fig.width=5, fig.height=5}
 plot(density(datos.estatura[, "estatura"]), type = 'l', ylim = c(0,15),
@@ -159,10 +159,10 @@ $$
 
 Además, el __rango intercuartílico__ es $Q_3 - Q_1 = 0.06$, es decir, el 50 % de las estaturas de la muestra están comprendidas entre 1.22 y 1.28 metros.
 
-7. __COEFICIENTE DE VARIACIÓN DE PEARSON__. Se calcula como el cociente entre la desviación típica y la media:
+7. __COEFICIENTE DE VARIACIÓN DE PEARSON__. Se calcula como el cociente entre la desviación típica y la media en términos absolutos:
 
 ```{r coeficiente_variacion_pearson}
-coef.var.pearson <- desv.tipica / media.aritmetica
+coef.var.pearson <- desv.tipica / abs(media.aritmetica)
 coef.var.pearson
 ```
 
@@ -215,7 +215,7 @@ intervalo.estatura <- cut(datos.estatura.peso[, "estatura"], breaks = breaks,
 levels(intervalo.estatura)
 ```
 
-Caben destacar los parámetros _include.lowest_ y _right_, los cuales permiten configurar el intervalo para incluir el valor más bajo, además de establecer el intervalo abierto por la derecha.
+Caben destacar los parámetros _include.lowest_ y _right_, los cuales permiten configurar el intervalo para incluir el valor más bajo, además de establecer el intervalo abierto por la derecha (a excepción del último).
 
 2. __PESO__:
 A continuación, analizamos las frecuencias de la columna peso:
@@ -265,10 +265,10 @@ De cara al cálculo del intervalo de confianza, debemos preguntarnos dos cuestio
 1. __¿Los datos están distribuidos normalmente?__
 2. __¿La varianza de ambas poblaciones, aunque desconocidas para nosotros, son iguales?__
 
-Para comprobar si los datos de ambas muestras están distribuidos normalmente, una primera aproximación es mediante un gráfico de cuantiles o __Gráfico Q-Q (_Quantile-Quantiles_)__ , así como un gráfico de densidad, por medio de una función denominada __mostrar_graficos__ :
+Para comprobar si los datos de ambas muestras están distribuidos normalmente, una primera aproximación es mediante un gráfico de cuantiles o __Gráfico Q-Q (_Quantile-Quantile_)__, así como un gráfico de densidad, por medio de una función denominada __mostrar_graficos__:
 
 ```{r importacion_paquete, results="hide"}
-# Importamos el paquete car, el contiene la funcion qqPlot
+# Importamos el paquete car, el cual contiene la funcion qqPlot
 library(car)
 ```
 
@@ -328,7 +328,7 @@ shapiro.test(datos.estatura.primeros.15[, "estatura"])
 shapiro.test(datos.estatura.ultimos.15[, "estatura"])
 ```
 
-Como podemos observar en las salidas anteriores, los P-valores obtenidos en ambas submuestras son superiores al nivel de significación $\alpha = 0.05$ , lo que significa que __estadísticamente no existe evidencia en contra de que ambas submuestras provengan de una distribución normal__ . Por ello, con vistas a este apartado asumiremos que los datos se distribuyen normalmente.
+Como podemos observar en las salidas anteriores, los P-valores obtenidos en ambas submuestras son superiores al nivel de significación $\alpha = 0.05$ , lo que significa que __estadísticamente no existe evidencia en contra de que ambas submuestras provengan de una distribución normal__. Por ello, con vistas a este apartado asumiremos que los datos se distribuyen normalmente.
 
 Una vez asumida la distribución normal de los datos, de cara al cálculo del intervalo de confianza debemos preguntarnos ¿Cómo son las varianzas de ambas poblaciones? ¿Cómo están relacionadas? Dado que en función de la respuesta a esta pregunta, el intervalo de confianza será diferente. El objetivo de la estadística inferencial es inducir, a partir de las propiedades de la muestra, el comportamiento de la población. No obstante, a menos que obtengamos toda la información (lo cual es poco probable) __NO podemos conocer a la población con exactitud ($\mu, \sigma$)__, pero si un intervalo entre cuyos valores se estima que se encuentra cada uno de estos parámetros.
 
@@ -410,6 +410,13 @@ Analizando la salida anterior, podemos comprobar cómo el intervalo resultante e
 1. En primer lugar, el intervalo obtenido comprende desde 0.31 hasta 2.76, aproximadamente, intervalo de confianza en el que está incluido el 1, lo que supone que ambas varianzas pueden ser iguales ($\frac{\sigma_1}{\sigma_2} = 1$).
 
 2. Por otro lado, el p-valor obtenido (0.8863) el cual es significativamente superior al valor $\alpha = 0.05$.
+
+Incluso reduciendo el intervalo de confianza (con un valor de confianza del 70 %):
+
+```{r var_test_70}
+var.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], 
+         conf.level = 0.70)
+```
 
 Por ello, se concluye que los resultados obtenidos __no muestran evidencia en contra de la homogeneidad de las varianzas (Homocedasticidad). Por tanto, la hipótesis nula $H_0$ se mantiene__. Como conclusión, podemos asumir que ambas varianzas son iguales.
 
