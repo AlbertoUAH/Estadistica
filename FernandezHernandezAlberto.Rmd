@@ -1,11 +1,18 @@
 ---
 title: "Práctica Estadística"
 author: "Fernández Hernández, Alberto"
-output: pdf_document
+date: "02/12/2020"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    df_print: paged
 ---
 
-## Ejercicio 1.
-### a) Dado el siguiente conjunto de datos, obtener con R las diferentes medidas de centralización y dispersión estudiadas. Así mismo obtener el diagrama de caja y bigotes.
+\newpage
+# Ejercicio 1
+## Apartado a)
+__Dado el siguiente conjunto de datos, obtener con R las diferentes medidas de centralización y dispersión estudiadas. Así mismo obtener el diagrama de caja y bigotes.__
 
 Inicialmente, partimos de los siguientes valores de estatura, recogidos en un DataFrame formado por las columnas __alumnos__ y __estaturas__:
 
@@ -128,7 +135,7 @@ desv.tipica
 
 Analizando el resultado obtenido, podemos comprobar como la dispersión de las medidas con respecto a la media es de unos centímetros de diferencia. No obstante, si realizamos un gráfico de densidad y lo comparamos con el de una distribución normal con la media y desviación típica obtenidas, vemos que muchas de las estaturas no se concentran en torno a la media, sino que observamos una mayor "concentración" de valores en torno a estaturas más bajas y más altas, correspondientes con los valores de la moda obtenidos anteriormente (en torno a 1.21, 1.22 y 1.28 metros). Por el contrario, la densidad al aproximarse a la media (1.25) es menor, por lo que no parece ser __un valor representativo de la muestra__:
 
-```{r grafico_densidad, fig.width=5, fig.height=5}
+```{r grafico_densidad, fig.width=5, fig.height=5, fig.cap="Comparativa entre la densidad estaturas y la distribución normal con la media y desviación típica obtenidas"}
 plot(density(datos.estatura[, "estatura"]), type = 'l', ylim = c(0,15),
      lwd = 2, xlab = "Estatura (metros)", ylab = "Densidad",
      main = "Densidad estaturas - distribucion normal")
@@ -140,9 +147,11 @@ legend("topleft", legend = c("Densidad estaturas", "Distribucion normal"),
 
 Una mejor forma de observar dicha dispersión es mediante un __diagrama de caja y bigotes__, empleando la función _boxplot_ de R:
 
-```{r diagrama_caja_bigotes}
-boxplot(datos.estatura[, "estatura"], medcol = "red", 
-        col = "grey", las = 1, ylab = "ESTATURAS", horizontal = TRUE)
+\newpage
+
+```{r diagrama_caja_bigotes, fig.cap="Diagrama de caja y bigotes de las medidas de la muestra"}
+boxplot(datos.estatura[, "estatura"], 
+        las = 1, ylab = "ESTATURAS", horizontal = TRUE)
 
 # Mediante la funcion summary mostramos los valores de los cuartiles
 summary(datos.estatura[, "estatura"])
@@ -168,7 +177,8 @@ coef.var.pearson
 
 Por lo general, dicho coeficiente se emplea para comparar el nivel de __dispersión__ entre dos muestras, especialmente cuando vienen expresadas en distintas unidades (lo cual no ocurre con la desviación típica).
 
-### b) Dado el siguiente conjunto de datos, obtener la tabla de correspondencias, con R, agrupando cada variable en cuatro clases o intervalos. Estos deberán ser elegidos por el alumno.
+## Apartado b)
+__Dado el siguiente conjunto de datos, obtener la tabla de correspondencias, con R, agrupando cada variable en cuatro clases o intervalos. Estos deberán ser elegidos por el alumno.__
 
 Como paso previo a la tabla de correspondencias, cargamos las medidas de estatura en un DataFrame con las columnas alumnos, estatura y peso:
 
@@ -207,7 +217,7 @@ $$
 \text{Intervalo peso: } [1.21, 1.24) ;[1.24, 1.27); [1.27, 1.29); [1.29, 1.30]
 $$
 
-Esto permite remarcar los dos últimos intervalos, donde se concentran el mayor número de muestras, esto es, entre 1.27 y 1.30. Para ello, la función _cut_ de R nos permite dividir el rango de un vector en intervalos de longitud N pasado como parámetro. Por tanto, el conjunto de intervalos para la estatura queda de la siguiente forma:
+Como podemos observar, la amplitud de los dos primeros intervalos es diferente con respecto a los dos últimos. Esto permite remarcar los dos últimos, donde (si recordamos del diagrama de caja y bigotes) se concentran el mayor número de muestras, esto es, entre 1.27 y 1.30. Para ello, la función _cut_ de R nos permite dividir el rango de un vector en intervalos de longitud N pasado como parámetro. Por tanto, el conjunto de intervalos para la estatura queda de la siguiente forma:
 
 ```{r intervalo_estatura}
 intervalo.estatura <- cut(datos.estatura.peso[, "estatura"], breaks = breaks, 
@@ -250,7 +260,10 @@ tabla.correspondencias <- cbind(tabla.correspondencias, apply(tabla.corresponden
 tabla.correspondencias
 ```
 
-## Ejercicio 2. Considerando, de nuevo, los datos de la primera pregunta del ejercicio anterior, se pide obtener un intervalo de confianza para la diferencia de medias teóricas entre las observaciones de los primeros 15 casos y de los segundos 15 casos.
+Analizando esta última tabla, podemos comprobar como el intervalo de peso con mayor número de alumnos se sitúa entre los 34 y 35 kg, mientras que los intervalos de altura se mueven en torno a 1.27 y 1.30 metros.
+
+# Ejercicio 2
+__Considerando, de nuevo, los datos de la primera pregunta del ejercicio anterior, se pide obtener un intervalo de confianza para la diferencia de medias teóricas entre las observaciones de los primeros 15 casos y de los segundos 15 casos.__
 
 Inicialmente, nos encontramos con dos submuestras de alturas de diferentes personas:
 
@@ -276,7 +289,8 @@ library(car)
 mostrar_graficos <- function(datos, columna) {
   par(mfrow = c(1,2))
   qqPlot(datos[, columna], pch=19, las=1, main='QQplot',
-        xlab='Cuantiles teoricos', ylab='Cuantiles muestrales')
+        xlab='Cuantiles teoricos', ylab='Cuantiles muestrales',
+        envelope=0.95)
   plot(density(datos[, columna]), lwd = 3, col = 'blue',
        xlab = 'Altura (metros)', ylab = 'Densidad',
        main = 'Grafico de densidad')
@@ -285,14 +299,15 @@ mostrar_graficos <- function(datos, columna) {
 
 Una vez definida la función, mostramos los gráficos correspondientes a ambas submuestras, tanto con el primer subconjunto:
 
-```{r mostrar_graficas_muestra1, fig.width=12, fig.height=6}
+```{r mostrar_graficas_muestra1, fig.width=12, fig.height=6, fig.cap="Grafico Q-Q y de densidad de los primeros 15 datos"}
 # Primeros 15 datos
 mostrar_graficos(datos.estatura.primeros.15, "estatura")
 ```
 
-Como el segundo:
+\newpage
+Como con el segundo:
 
-```{r mostrar_graficas_muestra2, fig.width=12, fig.height=6}
+```{r mostrar_graficas_muestra2, fig.width=12, fig.height=6, fig.cap="Grafico Q-Q y de densidad de los últimos 15 datos"}
 # Primeros 15 datos
 mostrar_graficos(datos.estatura.ultimos.15, "estatura")
 ```
@@ -311,7 +326,20 @@ H_1: \text{La muestra no proviene de una distribución normal}
 \end{aligned}
 $$
 
-Una posibilidad sería emplear el método de Kolmogorov-Smirnov visto en clase. Sin embargo, dicha técnica de inferencia asume que se conoce la media y desviación típica de la población, parámetros que por supuesto desconocemos. Por ello, R dispone de una función específica denominada _shapiro.test_ , basada en la técnica Shapiro-Wilk que permite contrastar la normalidad de los datos sin necesidad de conocer los parámetros poblacionales, adecuada además cuando la muestra es pequeña. Dicha técnica se basa en el cálculo del estadístico _W_ :
+Una posibilidad sería emplear el método de Kolmogorov-Smirnov visto en clase:
+
+```{r kolmogorov_smirnov}
+# Test de Kolmogorov-Smirnov (empleando la funcion ks)
+ks.test(datos.estatura.primeros.15[, "estatura"], 
+        mean(datos.estatura.primeros.15[, "estatura"]),
+        sd(datos.estatura.primeros.15[, "estatura"]))
+
+ks.test(datos.estatura.primeros.15[, "estatura"], 
+        mean(datos.estatura.primeros.15[, "estatura"]),
+        sd(datos.estatura.primeros.15[, "estatura"]))
+```
+
+Sin embargo, dicha técnica de inferencia asume que se conoce la media y desviación típica de la población, parámetros que por supuesto __desconocemos__. Por ello, R dispone de una función específica denominada _shapiro.test_ , basada en la técnica Shapiro-Wilk que permite contrastar la normalidad de los datos sin necesidad de conocer los parámetros poblacionales, adecuada además cuando la muestra es pequeña. Dicha técnica se basa en el cálculo del estadístico _W_ :
 
 $$
 W = \frac{(\sum^n_{i=1}{a_i}{x_i})^2}{\sum^n_{i=1}({x_i}-{\bar{x}})^2}
@@ -429,30 +457,7 @@ IC_\alpha (\mu_1 - \mu_2) = \bar{X} - \bar{Y} \pm t_{n_1 + n_2 - 2, \alpha/2} \f
 \end{aligned}
 $$
 
-Por ello, una primera aproximación sería, al igual que ocurría con las varianzas, implementar el intervalo de confianza a través de una función denominada __intervalo_confianza__, cuyos parámetros serán ambas submuestras (x,y), el nombre de la columna con las medidas así como el valor de confianza. Para obtener los valores correspondientes en la tabla t de Student, R dispone de una función específica denominada _qt_ , cuyos parámetros son el nivel de significación $\alpha$ para cada cola, así como el número de grados de libertad (df):
-
-```{r intervalo_confianza}
-intervalo_confianza <- function(x, y, columna, confianza) {
-  n.1 <- nrow(x)
-  n.2 <- nrow(y)
-  var.1 <- var(x[, columna]) * ((n.1 - 1 )/ n.1)
-  var.2 <- var(y[, columna]) * ((n.2 - 1 )/ n.2)
-  media.1 <- mean(x[, columna])
-  media.2 <- mean(y[, columna])
-  aux <- abs(qt(c((1 - confianza) / 2), df = n.1 + n.2 - 2)) * 
-          sqrt((n.1 * var.1 + n.2 * var.2) *
-          (1/n.1 + 1/n.2))/sqrt(n.1 + n.2 - 2)
-  c(media.1 - media.2 - aux, media.1 - media.2 + aux)
-}
-```
-
-Una vez definida la función, realizamos la prueba correspondiente para ambas submuestras:
-
-```{r prueba_intervalo_confianza}
-intervalo_confianza(datos.estatura.primeros.15, datos.estatura.ultimos.15, "estatura", 0.95)
-```
-
-Para comprobar el intervalo resultante, R dispone nuevamente de una función predefinida: _t.test_ , obteniendo con ella el intervalo de confianza. Asumiendo que no existe evidencia en contra de que ambas varianzas ($\sigma$) sean iguales, marcamos el parámetro _var.equal_ a TRUE, dado que por defecto R asume que las varianzas no son iguales (FALSE):
+Para ello, y en lugar de calcular a mano el intervalo, R dispone nuevamente de una función predefinida: _t.test_ , obteniendo con ella el intervalo de confianza. Asumiendo que no existe evidencia en contra de que ambas varianzas ($\sigma$) sean iguales, marcamos el parámetro _var.equal_ a TRUE, dado que por defecto R asume que las varianzas no son iguales (FALSE):
 
 ```{r t_test_95}
 # Por defecto, conf.level esta a 0.95
@@ -460,11 +465,19 @@ t.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "es
        var.equal = TRUE, conf.level = 0.95)
 ```
 
-Como podemos observar en los intervalos resultantes (los cuales coinciden), abarcan tantos valores positivos como negativos, por lo que cabe la posibilidad de que la diferencia entre ambas medias sea positiva, negativa o incluso cero (pues está incluido en el intervalo), lo que puede suponer que la media de ambas poblaciones puedan ser iguales. De hecho, _t.test_ considera como hipótesis nula que __la media entre ambas submuestras son iguales__, ya que si nos fijamos en la salida anterior vemos que considera como hipótesis alternativa o $H_1$ justo lo contrario: la diferencia entre ambas medias es distinto de cero.
+Como podemos observar en los intervalos resultantes (los cuales coinciden), abarcan tantos valores positivos como negativos, por lo que cabe la posibilidad de que la diferencia entre ambas medias sea positiva, negativa o incluso cero (pues está incluido en el intervalo), lo que puede suponer que la media de ambas poblaciones puedan ser iguales. Por otra parte, el p-valor obtenido: 0.2672, es superior al nivel de significación $\alpha = 0.05$, reafirmando la hipótesis nula:
 
-Dicho intervalo puede verse de forma gráfica, a través de un diagrama de caja y bigotes, donde la diferencia entre ambas medias es de apenas unos centímetros
+$$
+\begin{aligned}
+\text{Intervalo de confianza (95 \%): } \left[-0.011; 0.037\right]
+\end{aligned}
+$$
 
-```{r diagrama_caja_bigotes_2,  fig.width=7, fig.height=5}
+De hecho, _t.test_ considera como hipótesis nula que __la media entre ambas submuestras son iguales__, ya que si nos fijamos en la salida anterior vemos que considera como hipótesis alternativa o $H_1$ justo lo contrario: la diferencia entre ambas medias es distinto de cero.
+
+Dicho intervalo puede verse de forma gráfica, a través de un diagrama de caja y bigotes, donde podemos observar que la diferencia de estatura entre ambas muestran pueden negativas, positivas o iguales:
+\newpage
+```{r diagrama_caja_bigotes_2,  fig.width=7, fig.height=5, fig.cap="Diagrama de caja y bigotes comparativo entre ambas submuestras"}
 par(xpd = TRUE, mar = par()$mar + c(0,7,0,0))
 boxplot(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], 
         names = c("Alumnos [1:15]", "Alumnos [16:30]"), 
@@ -472,16 +485,22 @@ boxplot(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "e
         las = 2, horizontal = TRUE)
 ```
 
-Incluso disminuyendo el valor de confianza de un 95 a un 70 % (por ejemplo), el intervalo de confianza es cada vez más cerrado:
+Sin embargo, ¿Qué ocurriría si reducimos el intervalo de confianza de un 95 a un 80 % (por ejemplo)?
 
 ```{r t_test_70}
 t.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], 
-       var.equal = TRUE, conf.level = 0.70)
+       var.equal = TRUE, conf.level = 0.80)
 ```
 
-En este último intervalo, dado que los extremos son positivos, la media de población de la primera submuestra (los primeros 15 datos) es ligeramente mayor a la de la segunda submuestra. En cualquiera de los casos, el p-valor obtenido es superior a 0.05, por lo que no existiría evidencia estadística en contra de que ambas medias sean iguales.
+En este último intervalo, incluso con un porcentaje confianza del 80 %, podríamos seguir asegurando que no existe evidencia en contra de la igualdad entre ambas medias, dado que el cero se encuentra dentro del intervalo, además de que el p-valor es superior al nivel de significancia $\alpha = 0.20$:
 
-De igual modo, podemos realizar el contraste de hipóstesis "a mano", planteando $H_0$ y $H_1$:
+$$
+\begin{aligned}
+\text{Intervalo de confianza (80 \%): }\left[-0.002; 0.029\right]
+\end{aligned}
+$$
+
+De igual modo, podemos realizar el contraste de hipóstesis con ambos porcentajes "a mano", planteando $H_0$ y $H_1$:
 
 $$
 \begin{aligned}
@@ -491,7 +510,7 @@ H_1: \mu_1 \neq \mu_2
 \end{aligned}
 $$
 
-Para esta prueba, operaremos con un valor convencional $\alpha$ del 0.05 % (zona de rechazo de la hipótesis nula). Por ello, la zona central comprende el 95 % de los casos, es decir, la __zona de aceptación__ de la hipótesis nula. Si la diferencia entre ambas medias se encuentra dentro de $H_0$ , aceptaremos la hipótesis nula. Por el contrario, si se encuentra dentro de la zona de rechazo, lo más conveniente es descartar $H_0$, ya que sería más viable asegurar que ambas muestras proceden de distintas poblaciones, con sólo un riesgo del 0.05. Por tanto, se trata de comprobar en qué zona se encuentra la diferencia de 0 entre ambas medias. Dado que en el intervalo de confianza hemos comprobado que el valor de 0 cae dentro del intervalo, lo confirmaremos con la siguiente prueba:
+El objetivo es realizar el cálculo del estadístico _T_:
 
 $$
 \begin{aligned}
@@ -516,10 +535,14 @@ contrastar_hipotesis <- function(x, y, columna, confianza) {
 }
 ```
 
-Una vez definida dicha función, realizamos la prueba con las dos submuestras:
+Una vez definida dicha función, realizamos la prueba con las dos submuestras. En función cada una, el nivel de significación será diferente ($\alpha = 0.05$ para un 95 %, $\alpha = 0.20$ para un 80 %):
 
 ```{r prueba_contrastar_hipotesis}
+# Con un 95 % de confianza
 contrastar_hipotesis(datos.estatura.primeros.15, datos.estatura.ultimos.15, "estatura", 0.95)
+
+# Con un 80 % de confianza
+contrastar_hipotesis(datos.estatura.primeros.15, datos.estatura.ultimos.15, "estatura", 0.80)
 ```
 
-Analizando el resultado obtenido, $T < t_{m+n+2, \alpha/2}$, por lo que __no podemos rechazar $H_0$ para un nivel de significación del 5 %. Por tanto, asumimos que ambas muestras pertenecen a la misma población, es decir, presentan la misma media__. Del mismo modo que la función _t.test_ anterior, el p-valor (0.2672) es superior al valor $\alpha = 0.05$, evidenciando de nuevo la hipótesis nula.
+Analizando los resultados obtenidos, en ambos casos $T < t_{m+n+2, \alpha/2}$, por lo que __no podemos rechazar $H_0$ tanto para un nivel de significación del 5 % como incluso del 20 %. Por tanto, asumimos que ambas muestras pertenecen a la misma población, es decir, presentan la misma media__.
