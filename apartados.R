@@ -168,7 +168,7 @@ contrastar_varianzas <- function(x, y, columna, confianza) {
   estadistico.f <- min(var.1, var.2) / max(var.1, var.2)
   lim.inf <- estadistico.f * (1 / qf(1- (1 - confianza) / 2, df1 = n.1 - 1, df2 = n.2 - 1))
   lim.sup <- estadistico.f * (1 / qf((1 - confianza) / 2, df1 = n.1 - 1, df2 = n.2 - 1))
-  cat("Estadistico F: ", estadistico.f, ". Intervalo: ",c(lim.inf, lim.sup))
+  cat("Estadistico F: ", estadistico.f, ". Intervalo: [",lim.inf, ",", lim.sup, "]")
 }
 contrastar_varianzas(datos.estatura.primeros.15, datos.estatura.ultimos.15, "estatura", 0.95)
 
@@ -176,7 +176,7 @@ contrastar_varianzas(datos.estatura.primeros.15, datos.estatura.ultimos.15, "est
 var.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"])
 
 # Si establecemos el intervalo de confianza a un 70 %...
-var.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], conf.level = 0.70)
+var.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], conf.level = 0.80)
 
 # Calculo del Intervalo de Confianza (IC)
 # Por defecto, conf.level esta a 0.95
@@ -213,7 +213,10 @@ contrastar_hipotesis <- function(x, y, columna, confianza) {
   s.c <- (n.1 * var.1 + n.2 * var.2) / (n.1 + n.2 - 2)
   estadistico.t <- (media.1 - media.2) / sqrt(s.c *  (1/n.1 + 1/n.2))
   t.student <-  abs(qt(c((1 - confianza) / 2), df = n.1 + n.2 - 2))
-  print(data.frame("T" = estadistico.t, "t.Student" = t.student), row.names = FALSE)
+  p.valor <- 2 * pt(estadistico.t, n.1 + n.2 - 2, lower = FALSE)
+  print(data.frame("T" = estadistico.t, "t.Student" = t.student, 
+                   "p-valor" = p.valor, "alfa" = 1 - confianza),
+        row.names = FALSE)
 }
 
 # Con un 95 % de confianza

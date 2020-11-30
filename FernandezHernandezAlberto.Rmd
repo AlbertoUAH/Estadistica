@@ -1,7 +1,7 @@
 ---
 title: "Práctica Estadística"
-author: "Fernández Hernández, Alberto"
-date: "02/12/2020"
+author: "Fernández Hernández, Alberto. 54003003S"
+date: "08/12/2020"
 output:
   pdf_document:
     toc: yes
@@ -347,7 +347,7 @@ $$
 W = \frac{(\sum^n_{i=1}{a_i}{x_i})^2}{\sum^n_{i=1}({x_i}-{\bar{x}})^2}
 $$
 
-Donde $x_i$ es el i-ésimo valor de la muestra y $a_i$ el coeficiente obtenido a través de la tabla de contraste de Shapiro-Wilks:
+Donde $x_i$ es el i-ésimo valor de la muestra y $a_i$ el coeficiente obtenido a través de la tabla de contraste de Shapiro-Wilks, planteando como hipótesis nula que los datos de una muestra __provienen de una población normalmente distribuida__: 
 
 ```{r shapiro_test}
 # Prueba Shapiro-Wilk en R
@@ -358,7 +358,7 @@ shapiro.test(datos.estatura.primeros.15[, "estatura"])
 shapiro.test(datos.estatura.ultimos.15[, "estatura"])
 ```
 
-Como podemos observar en las salidas anteriores, los p-valores obtenidos en ambas submuestras son superiores al nivel de significación $\alpha = 0.05$ , lo que significa que __estadísticamente no existe evidencia en contra de que ambas submuestras provengan de una distribución normal__. Por ello, con vistas a este apartado asumiremos que los datos se distribuyen normalmente.
+Como podemos observar en las salidas anteriores, los p-valores obtenidos en ambas submuestras son superiores al nivel de significación $\alpha = 0.05$ , aunque la segunda submuestra con mayor p-valor que la primera. Dicha comparación implica que __estadísticamente no existe evidencia en contra de que ambas submuestras provengan de una distribución normal__. Por ello, con vistas a este apartado podemos asumir que los datos se distribuyen normalmente.
 
 Una vez asumida la distribución normal de los datos, de cara al cálculo del intervalo de confianza debemos preguntarnos ¿Cómo son las varianzas de ambas poblaciones? ¿Cómo están relacionadas? Dado que en función de la respuesta a esta pregunta, el intervalo de confianza será diferente. El objetivo de la estadística inferencial es inducir, a partir de las propiedades de la muestra, el comportamiento de la población. No obstante, a menos que obtengamos toda la información (lo cual es poco probable) __NO podemos conocer a la población con exactitud ($\mu, \sigma$)__, pero si un intervalo entre cuyos valores se estima que se encuentra cada uno de estos parámetros.
 
@@ -409,7 +409,7 @@ contrastar_varianzas <- function(x, y, columna, confianza) {
   estadistico.f <- min(var.1, var.2) / max(var.1, var.2)
   lim.inf <- estadistico.f * (1 / qf(1- (1 - confianza) / 2, df1 = n.1 - 1, df2 = n.2 - 1))
   lim.sup <- estadistico.f * (1 / qf((1 - confianza) / 2, df1 = n.1 - 1, df2 = n.2 - 1))
-  cat("Estadistico F: ", estadistico.f, ". Intervalo: ",c(lim.inf, lim.sup))
+  cat("Estadistico F: ", estadistico.f, ". Intervalo: [",lim.inf, ",", lim.sup, "]")
 }
 ```
 
@@ -437,11 +437,11 @@ De dicha salida caben destacar dos aspectos:
 
 2. Por otro lado, el p-valor obtenido a partir del estadístico F (0.8863) es significativamente superior al valor $\alpha = 0.05$.
 
-Incluso reduciendo el intervalo de confianza a un 70 %, el valor de uno sigue contenido en el intervalo:
+Incluso reduciendo el intervalo de confianza a un 80 %, el valor de uno sigue contenido en el intervalo:
 
 ```{r var_test_70}
 var.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], 
-         conf.level = 0.70)
+         conf.level = 0.80)
 ```
 
 Por ello, se concluye que los resultados obtenidos __no muestran evidencia en contra de la homogeneidad de las varianzas (Homocedasticidad). Por tanto, la hipótesis nula $H_0$ se mantiene__. Como conclusión, podemos asumir que ambas varianzas son iguales.
@@ -476,7 +476,10 @@ Dicho intervalo abarca tantos valores positivos como negativos, por lo que cabe 
 
 De hecho, _t.test_ considera como hipótesis nula que __la media entre ambas submuestras son iguales__, ya que si nos fijamos en la salida anterior vemos que considera como hipótesis alternativa o $H_1$ justo lo contrario: _true difference in means is not equal to 0_ ( _two.sided_ ).
 
-De forma gráfica, podemos observar que el valor del estadístico T "cae" dentro de la zona de aceptación de la hipótesis nula, por lo que a un 95 % de confianza se puede decir que la diferencia entre los promedios de estatura es cero:
+De forma gráfica, podemos observar que el valor del estadístico T "cae" dentro de la zona de aceptación de la hipótesis nula, por lo que a un 95 % de confianza se puede asumir que la diferencia entre los promedios de estatura ($\mu_1-\mu_2$) es cero [^1] [^2]
+
+[^1]: https://cran.r-project.org/web/packages/moonBook/moonBook.pdf
+[^2]: https://cran.r-project.org/web/packages/webr/webr.pdf
 
 ```{r salida_t_test,  fig.width=5, fig.height=4, fig.cap="Valor del estadístico T sobre un intervalo de confianza del 95 %"}
 # Cargamos para ello dos librerias adicionales
@@ -509,6 +512,8 @@ $$
 plot(x)
 ```
 
+__Así mismo, se pide contrastar la hipótesis nula de que ambas sub-muestras tienen la misma media, es decir, proceden de la misma población. Detallar las hipótesis necesarias para hacer tal contraste, aunque no es preciso comprobarlas. El análisis debe realizarse con R.__
+
 Aunque hemos comprobado que el p-valor es superior al valor $\alpha$ en cada caso, de igual modo podemos realizar el contraste de hipótesis con ambos porcentajes "a mano", planteando $H_0$ y $H_1$:
 
 $$
@@ -527,7 +532,7 @@ T = \frac{\lvert\bar{X} - \bar{Y}- 0\rvert}{\sqrt{\frac{(n_1S_x^2 + n_2S_y^2)}{n
 \end{aligned}
 $$
 
-Una vez calculado el valor de T, debemos probar que sea estrictamente menor al valor t-student $t_{m+n-2, \alpha/2}$ . Para ello, creamos una función denominada __contrastar_hipotesis__ que devuelve tanto el valor del estadístico como el valor t-Student:
+Una vez calculado el valor de T, debemos probar que sea estrictamente menor al valor t-student $t_{m+n-2, \alpha/2}$ . Para ello, creamos una función denominada __contrastar_hipotesis__ que devuelve tanto el valor del estadístico como el valor t-Student además del p-valor mediante la función _pt_, el cual devuelve el valor correspondiente de la función de distribución:
 
 ```{r contrastar_hipotesis}
 contrastar_hipotesis <- function(x, y, columna, confianza) {
@@ -540,7 +545,10 @@ contrastar_hipotesis <- function(x, y, columna, confianza) {
   s.c <- (n.1 * var.1 + n.2 * var.2) / (n.1 + n.2 - 2)
   estadistico.t <- (media.1 - media.2) / sqrt(s.c *  (1/n.1 + 1/n.2))
   t.student <-  abs(qt(c((1 - confianza) / 2), df = n.1 + n.2 - 2))
-  print(data.frame("T" = estadistico.t, "t.Student" = t.student), row.names = FALSE)
+  p.valor <- 2 * pt(estadistico.t, n.1 + n.2 - 2, lower = FALSE)
+  print(data.frame("T" = estadistico.t, "t.Student" = t.student, 
+        "p-valor" = p.valor, "alfa" = 1 - confianza),
+        row.names = FALSE)
 }
 ```
 
@@ -554,4 +562,4 @@ contrastar_hipotesis(datos.estatura.primeros.15, datos.estatura.ultimos.15, "est
 contrastar_hipotesis(datos.estatura.primeros.15, datos.estatura.ultimos.15, "estatura", 0.80)
 ```
 
-Analizando los resultados obtenidos (coincidiendo el estadístico T con el obtenido en la función _t.test_), en ambos casos $T < t_{m+n+2, \alpha/2}$ (dicho de otro modo, no cae dentro de la zona de rechazo $H_1$) por lo que __no podemos rechazar $H_0$ tanto para un nivel de significación del 5 % como incluso del 20 %. Por tanto, no hay evidencia suficiente para concluir que el promedio de alturas de la primera submuestra sea distinto al de la segunda.__.
+Analizando los resultados obtenidos (coincidiendo tanto el estadístico T como el p-valor con lo obtenido en la función _t.test_), en ambos casos $T < t_{m+n+2, \alpha/2}$, además de que $p-valor > \alpha$ (dicho de otro modo, no cae dentro de región de rechazo de $H_1$) por lo que __no podemos rechazar $H_0$ tanto para un nivel de significación del 5 % como incluso del 20 %. Por tanto, los datos muestrales (para un __ $\alpha$ __< 0.2672, esto es, el p-valor) no contienen suficiente evidencia para rechazar la hipótesis nula de que la diferencia de ambas medias sean cero, es decir, sean iguales.__
