@@ -358,7 +358,7 @@ shapiro.test(datos.estatura.primeros.15[, "estatura"])
 shapiro.test(datos.estatura.ultimos.15[, "estatura"])
 ```
 
-Como podemos observar en las salidas anteriores, los p-valores obtenidos en ambas submuestras son superiores al nivel de significación $\alpha = 0.05$ , aunque la segunda submuestra con mayor p-valor que la primera. Dicha comparación implica que __estadísticamente no existe evidencia en contra de que ambas submuestras provengan de una distribución normal__. Por ello, con vistas a este apartado podemos asumir que los datos se distribuyen normalmente.
+Como podemos observar en las salidas anteriores, los p-valores obtenidos en ambas submuestras son superiores al nivel de significación $\alpha = 0.05$ , aunque la segunda submuestra con mayor p-valor que la primera. Dicha comparación implica que __estadísticamente no existe evidencia en contra de que ambas submuestras provengan de una distribución normal__. Por ello, con vistas a este apartado no podemos rechazar que los datos provienen de poblaciones normalmente distribuidas, por lo que lo asumiremos.
 
 Una vez asumida la distribución normal de los datos, de cara al cálculo del intervalo de confianza debemos preguntarnos ¿Cómo son las varianzas de ambas poblaciones? ¿Cómo están relacionadas? Dado que en función de la respuesta a esta pregunta, el intervalo de confianza será diferente. El objetivo de la estadística inferencial es inducir, a partir de las propiedades de la muestra, el comportamiento de la población. No obstante, a menos que obtengamos toda la información (lo cual es poco probable) __NO podemos conocer a la población con exactitud ($\mu, \sigma$)__, pero si un intervalo entre cuyos valores se estima que se encuentra cada uno de estos parámetros.
 
@@ -444,7 +444,7 @@ var.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "
          conf.level = 0.80)
 ```
 
-Por ello, se concluye que los resultados obtenidos __no muestran evidencia en contra de la homogeneidad de las varianzas (Homocedasticidad). Por tanto, la hipótesis nula $H_0$ se mantiene__. Como conclusión, podemos asumir que ambas varianzas son iguales.
+Por ello, se concluye que los resultados obtenidos __no muestran evidencia en contra de la homogeneidad de las varianzas poblacionales (Homocedasticidad). Por tanto, la hipótesis nula $H_0$ se mantiene__. Como conclusión, podemos asumir que ambas varianzas son iguales.
 
 Por tanto, una vez determinada la normalidad de los datos así como la igualdad de las varianzas poblacionales, ya podemos calcular el __intervalo de confianza para la diferencia de medias con varianzas desconocidas pero iguales__, visto en clase:
 
@@ -464,15 +464,15 @@ x <- t.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[
 x
 ```
 
-Como podemos observar, obtenemos el siguiente intervalo:
+__SOLUCIÓN. Como podemos observar, obtenemos el siguiente intervalo:__
 
 $$
 \begin{aligned}
-\text{Intervalo de confianza (al 95 \%) para la diferencia de medias de estatura: } \left[-0.011; 0.037\right]
+\text{Intervalo de confianza (al 95 \%) para la diferencia de medias teóricas: } \left[-0.011; 0.037\right]
 \end{aligned}
 $$
 
-Dicho intervalo abarca tantos valores positivos como negativos, por lo que cabe la posibilidad de que la diferencia entre ambas medias sea positiva, negativa o incluso cero (pues está incluido en el intervalo), lo que puede suponer que la media de ambas poblaciones puedan ser iguales. Por otra parte, entre la información del contraste de hipótesis se incluye el valor del estadístico T (1.132), el número de grados de libertad (28), así como el p-valor obtenido: 0.2672, el cual es superior al nivel de significación $\alpha = 0.05$. Esto último supone que __no podemos rechazar, con un 95 % de confianza, la hipótesis nula de que ambas medias sean idénticas__.
+Dicho intervalo abarca tantos valores positivos como negativos, por lo que cabe la posibilidad de que la diferencia entre ambas medias sea positiva, negativa o incluso cero (pues está incluido en el intervalo), lo que supone que la media de ambas poblaciones pueden ser iguales. Por otra parte, entre la información del contraste de hipótesis se incluye el valor del estadístico T (1.132), el número de grados de libertad (28), así como el p-valor obtenido: 0.2672, el cual es superior al nivel de significación $\alpha = 0.05$. Esto último supone que __no podemos rechazar, con un 95 % de confianza, la hipótesis nula de que ambas medias sean idénticas__.
 
 De hecho, _t.test_ considera como hipótesis nula que __la media entre ambas submuestras son iguales__, ya que si nos fijamos en la salida anterior vemos que considera como hipótesis alternativa o $H_1$ justo lo contrario: _true difference in means is not equal to 0_ ( _two.sided_ ).
 
@@ -503,7 +503,7 @@ En este último intervalo, a un 80 % de confianza, el valor cero __sigue conteni
 
 $$
 \begin{aligned}
-\text{Intervalo de confianza (al 80 \%) para la diferencia de medias de estatura: }\left[-0.002; 0.029\right]
+\text{Intervalo de confianza (al 80 \%) para la diferencia de medias teóricas: }\left[-0.002; 0.029\right]
 \end{aligned}
 $$
 
@@ -514,7 +514,7 @@ plot(x)
 
 __Así mismo, se pide contrastar la hipótesis nula de que ambas sub-muestras tienen la misma media, es decir, proceden de la misma población. Detallar las hipótesis necesarias para hacer tal contraste, aunque no es preciso comprobarlas. El análisis debe realizarse con R.__
 
-Aunque hemos comprobado que el p-valor es superior al valor $\alpha$ en cada caso, de igual modo podemos realizar el contraste de hipótesis con ambos porcentajes "a mano", planteando $H_0$ y $H_1$:
+Aunque hemos comprobado que el p-valor es superior al valor $\alpha$ en cada caso, de igual modo podemos realizar el contraste de hipótesis con ambos porcentajes "a mano", planteando $H_0$ y $H_1$ de forma bilateral, es decir, la hipótesis nula defiende la igualdad de ambas medias, mientras que la hipótesis alternativa defiende la desigualdad entre ambas (sea mayor o menor): 
 
 $$
 \begin{aligned}
@@ -562,4 +562,4 @@ contrastar_hipotesis(datos.estatura.primeros.15, datos.estatura.ultimos.15, "est
 contrastar_hipotesis(datos.estatura.primeros.15, datos.estatura.ultimos.15, "estatura", 0.80)
 ```
 
-Analizando los resultados obtenidos (coincidiendo tanto el estadístico T como el p-valor con lo obtenido en la función _t.test_), en ambos casos $T < t_{m+n+2, \alpha/2}$, además de que $p-valor > \alpha$ (dicho de otro modo, no cae dentro de región de rechazo de $H_1$) por lo que __no podemos rechazar $H_0$ tanto para un nivel de significación del 5 % como incluso del 20 %. Por tanto, los datos muestrales (para un __ $\alpha$ __< 0.2672, esto es, el p-valor) no contienen suficiente evidencia para rechazar la hipótesis nula de que la diferencia de ambas medias sean cero, es decir, sean iguales.__
+Analizando los resultados obtenidos (coincidiendo tanto el estadístico T como el p-valor con lo obtenido en la función _t.test_), en ambos casos $T < t_{m+n+2, \alpha/2}$, además de que $p-valor > \alpha$ (dicho de otro modo, no cae dentro de región de rechazo de $H_1$) por lo que __no podemos rechazar $H_0$ tanto para un nivel de significación del 5 % como incluso del 20 %. Generalizando, los datos muestrales (para un __ $\alpha$ __< 0.2672, esto es, el p-valor) no contienen suficiente evidencia para rechazar la hipótesis nula de que la diferencia de ambas medias sean cero, es decir, iguales.__
