@@ -135,7 +135,7 @@ library(car)
 # un grafico q-q y graficos de densidad
 mostrar_graficos <- function(datos, columna) {
   par(mfrow = c(1,2))
-  qqPlot(datos[, columna], pch=19, las=1, main='QQplot',
+  car::qqPlot(datos[, columna], pch=19, las=1, main='QQplot',
          xlab='Cuantiles teoricos', ylab='Cuantiles muestrales',
          envelope=0.95)
   plot(density(datos[, columna]), lwd = 3, col = 'blue',
@@ -180,9 +180,9 @@ var.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "
 
 # Calculo del Intervalo de Confianza (IC)
 # Por defecto, conf.level esta a 0.95
-x <- t.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], var.equal = TRUE, 
+x.95 <- t.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], var.equal = TRUE, 
             conf.level = 0.95)
-x
+x.95
 
 # Mostramos graficamente el estadistico T
 # Cargamos para ello dos librerias adicionales
@@ -192,15 +192,15 @@ if(!require(webr)) install.packages("webr")
 library(moonBook)
 library(webr)
 
-plot(x)
+plot(x.95)
 
 # Si modificamos el intervalo de confianza al 80 %...
-x <- t.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], var.equal = TRUE, 
+x.80 <- t.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], var.equal = TRUE, 
             conf.level = 0.80)
-x
+x.80
 
 # Mostramos graficamente el valor del estadistico T
-plot(x)
+plot(x.80)
 
 # Contraste de hipotesis (varianzas desconocidas pero iguales)
 contrastar_hipotesis <- function(x, y, columna, confianza) {
@@ -214,7 +214,7 @@ contrastar_hipotesis <- function(x, y, columna, confianza) {
   estadistico.t <- (media.1 - media.2) / sqrt(s.c *  (1/n.1 + 1/n.2))
   t.student <-  abs(qt(c((1 - confianza) / 2), df = n.1 + n.2 - 2))
   p.valor <- 2 * pt(estadistico.t, n.1 + n.2 - 2, lower = FALSE)
-  print(data.frame("T" = estadistico.t, "t.Student" = t.student, 
+  print(data.frame("t" = estadistico.t, "t.Student" = t.student, 
                    "p-valor" = p.valor, "alfa" = 1 - confianza),
         row.names = FALSE)
 }
@@ -222,5 +222,11 @@ contrastar_hipotesis <- function(x, y, columna, confianza) {
 # Con un 95 % de confianza
 contrastar_hipotesis(datos.estatura.primeros.15, datos.estatura.ultimos.15, "estatura", 0.95)
 
+# Valores obtenidos en t.test
+x.95$statistic; x.95$p.value
+
 # Con un 80 % de confianza
 contrastar_hipotesis(datos.estatura.primeros.15, datos.estatura.ultimos.15, "estatura", 0.80)
+
+# Valores obtenidos en t.test
+x.80$statistic; x.80$p.value
