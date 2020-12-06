@@ -194,14 +194,6 @@ library(webr)
 
 plot(x.95)
 
-# Si modificamos el intervalo de confianza al 80 %...
-x.80 <- t.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], var.equal = TRUE, 
-            conf.level = 0.80)
-x.80
-
-# Mostramos graficamente el valor del estadistico T
-plot(x.80)
-
 # Contraste de hipotesis (varianzas desconocidas pero iguales)
 contrastar_hipotesis <- function(x, y, columna, confianza) {
   n.1 <- nrow(x)
@@ -223,10 +215,12 @@ contrastar_hipotesis <- function(x, y, columna, confianza) {
 contrastar_hipotesis(datos.estatura.primeros.15, datos.estatura.ultimos.15, "estatura", 0.95)
 
 # Valores obtenidos en t.test
-x.95$statistic; x.95$p.value
+cat("Valor obtenido en t.test() - t: ", x.95$statistic, ";p-valor:", x.95$p.value, "\n")
 
-# Con un 80 % de confianza
-contrastar_hipotesis(datos.estatura.primeros.15, datos.estatura.ultimos.15, "estatura", 0.80)
+# Si modificamos el intervalo de confianza al 80 %...
+x.80 <- t.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], var.equal = TRUE, 
+               conf.level = 0.80)
+x.80
 
-# Valores obtenidos en t.test
-x.80$statistic; x.80$p.value
+# Mostramos graficamente el valor del estadistico T
+plot(x.80)

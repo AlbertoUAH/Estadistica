@@ -466,18 +466,22 @@ x.95$conf.int
 
 $$
 \begin{aligned}
-\text{Intervalo de confianza (al 95 \%) para la diferencia de medias teóricas: } \left[-0.011; 0.037\right]
+\text{INTERVALO DE CONFIANZA (AL 95 \%) PARA LA DIFERENCIA DE MEDIAS TEÓRICAS: } \left[-0.011; 0.037\right]
 \end{aligned}
 $$
 
-Dicho intervalo abarca tantos valores positivos como negativos, por lo que cabe la posibilidad de que la diferencia entre ambas medias sea positiva, negativa o incluso cero (pues está incluido en el intervalo), lo que supone que la media de ambas poblaciones pueden ser iguales. Por otra parte, entre la información del contraste de hipótesis se incluye el valor del estadístico t (1.132), el número de grados de libertad (28), así como el p-valor obtenido: 0.2672, el cual es superior al nivel de significación $\alpha = 0.05$:
+Dicho intervalo abarca tantos valores positivos como negativos, por lo que cabe la posibilidad de que la diferencia entre ambas medias sea positiva, negativa o incluso cero (pues está incluido en el intervalo), lo que supone que la media de ambas poblaciones pueden ser iguales. 
+
+__Así mismo, se pide contrastar la hipótesis nula de que ambas sub-muestras tienen la misma media, es decir, proceden de la misma población. Detallar las hipótesis necesarias para hacer tal contraste, aunque no es preciso comprobarlas. El análisis debe realizarse con R.__
+
+Por otra parte, entre la información del contraste de hipótesis se incluye el valor del estadístico t (1.132), el número de grados de libertad (28), así como el p-valor obtenido: 0.2672, el cual es superior al nivel de significación $\alpha = 0.05$:
 
 ```{r p_valor}
 # P-valor
 x.95$p.value
 ```
 
-Esto último supone que __no podemos rechazar, con un 95 % de confianza, la hipótesis nula de que ambas medias sean idénticas__.
+Esto último supone que __no podemos rechazar, con un 95 % de confianza, la hipótesis nula de que ambas medias sean idénticas, es decir, pertenezcan a la misma población__.
 
 De hecho, _t.test_ considera como hipótesis nula que __la media entre ambas submuestras son iguales__, ya que si nos fijamos en la salida anterior vemos que considera como hipótesis alternativa o $H_1$ justo lo contrario: _true difference in means is not equal to 0_ ( _two.sided_ ).
 
@@ -495,29 +499,6 @@ plot(x.95)
 ```
 
 \newpage
-
-Sin embargo, ¿Qué ocurriría si reducimos el intervalo de confianza de un 95 a un 80 %, por ejemplo?
-
-```{r t_test_80}
-x.80 <- t.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], 
-       var.equal = TRUE, conf.level = 0.80)
-x.80
-```
-
-En este último intervalo, a un 80 % de confianza, el valor cero __sigue contenido dentro del intervalo__ (más cerrado que en el caso anterior), por lo que podemos seguir asegurando que no existe evidencia en contra de la igualdad entre ambas medias, dado que el cero se encuentra dentro del intervalo, además de que el p-valor es superior al nivel de significancia $\alpha = 0.20$. Generalizando, __sólo se rechazaría $H_0$ para tamaños $\alpha$ mayor al p-valor = 0.2672 (por ejemplo,__ $\alpha$ __= 0.3)__.
-
-$$
-\begin{aligned}
-\text{Intervalo de confianza (al 80 \%) para la diferencia de medias teóricas: }\left[-0.002; 0.029\right]
-\end{aligned}
-$$
-
-```{r salida_t_test_2,  fig.width=5, fig.height=4, fig.cap="Valor del estadístico t sobre un intervalo de confianza del 80 %"}
-# Mostramos graficamente el valor del estadistico T
-plot(x.80)
-```
-
-__Así mismo, se pide contrastar la hipótesis nula de que ambas sub-muestras tienen la misma media, es decir, proceden de la misma población. Detallar las hipótesis necesarias para hacer tal contraste, aunque no es preciso comprobarlas. El análisis debe realizarse con R.__
 
 Aunque hemos comprobado que el p-valor es superior al valor $\alpha$ en cada caso, de igual modo podemos realizar el contraste de hipótesis con ambos porcentajes "a mano", planteando $H_0$ y $H_1$ de forma bilateral, es decir, la hipótesis nula defiende la igualdad de ambas medias, mientras que la hipótesis alternativa defiende la desigualdad entre ambas (sea mayor o menor): 
 
@@ -549,27 +530,44 @@ contrastar_hipotesis <- function(x, y, columna, confianza) {
   media.2 <- mean(y[, columna])
   s.c <- (n.1 * var.1 + n.2 * var.2) / (n.1 + n.2 - 2)
   estadistico.t <- (media.1 - media.2) / sqrt(s.c *  (1/n.1 + 1/n.2))
-  t.student <-  abs(qt(c((1 - confianza) / 2), df = n.1 + n.2 - 2))
+  t.student <-  abs(qt(c((1- confianza) / 2), df = n.1 + n.2 - 2))
   p.valor <- 2 * pt(estadistico.t, n.1 + n.2 - 2, lower = FALSE)
   print(data.frame("t" = estadistico.t, "t.Student" = t.student, "p-valor" = p.valor, 
         "alfa" = 1 - confianza), row.names = FALSE)
 }
 ```
 
-Una vez definida dicha función, realizamos la prueba con las dos submuestras. En función cada una, el nivel de significación será diferente ($\alpha = 0.05$ para un 95 %, $\alpha = 0.20$ para un 80 %):
+Una vez definida dicha función, realizamos la prueba con las dos submuestras:
 
 ```{r prueba_contrastar_hipotesis}
 # Con un 95 % de confianza
 contrastar_hipotesis(datos.estatura.primeros.15, datos.estatura.ultimos.15, "estatura", 0.95)
-
-# Valores obtenidos en t.test
-x.95$statistic; x.95$p.value
-
-# Con un 80 % de confianza
-contrastar_hipotesis(datos.estatura.primeros.15, datos.estatura.ultimos.15, "estatura", 0.80)
-
-# Valores obtenidos en t.test
-x.80$statistic; x.80$p.value
 ```
 
-Analizando los resultados obtenidos (coincidiendo tanto el estadístico t como el p-valor con lo obtenido en la función _t.test_), en ambos casos $t < t_{m+n+2, \alpha/2}$, además de que $p-valor > \alpha$ (dicho de otro modo, no cae dentro de región de rechazo de $H_1$) por lo que __no podemos rechazar $H_0$ tanto para un nivel de significación del 5 % como incluso del 20 %. Generalizando, los datos muestrales (para un __ $\alpha$ __< 0.2672, esto es, el p-valor) no contienen suficiente evidencia para rechazar la hipótesis nula de que la diferencia de ambas medias sean cero, es decir, iguales.__
+```{r echo=FALSE}
+# Valores obtenidos en t.test
+cat("Valores obtenido en t.test() -> t: ", x.95$statistic, ";p-valor:", x.95$p.value, "\n")
+```
+
+Analizando los resultados obtenidos (coincidiendo tanto el estadístico t como el p-valor con lo obtenido en la función _t.test_), en ambos casos $t < t_{m+n+2, \alpha/2}$, además de que $p-valor > \alpha$ (dicho de otro modo, no cae dentro de región de rechazo de $H_1$) por lo que __no podemos rechazar $H_0$ para un nivel de significación del 5 % . Generalizando, los datos muestrales (para un __ $\alpha$ __< 0.2672, esto es, el p-valor) no contienen suficiente evidencia para rechazar la hipótesis nula de que la diferencia de ambas medias sean cero, es decir, iguales.__
+
+Por último y como curiosidad, ¿Qué ocurriría si reducimos el intervalo de confianza de un 95 a un 80 %, por ejemplo?
+
+```{r t_test_80}
+x.80 <- t.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], 
+       var.equal = TRUE, conf.level = 0.80)
+x.80
+```
+
+En este último intervalo, a un 80 % de confianza, el valor cero __sigue contenido dentro del intervalo__ (más cerrado que en el caso anterior), por lo que podemos seguir asegurando que no existe evidencia en contra de la igualdad entre ambas medias, dado que el cero se encuentra dentro del intervalo, además de que el p-valor es superior al nivel de significancia $\alpha = 0.20$. Generalizando, __sólo se rechazaría $H_0$ para tamaños $\alpha$ mayor al p-valor = 0.2672 (por ejemplo,__ $\alpha$ __= 0.3)__.
+
+$$
+\begin{aligned}
+\text{INTERVALO DE CONFIANZA (AL 80 \%) PARA LA DIFERENCIA DE MEDIAS TEÓRICAS: }\left[-0.002; 0.029\right]
+\end{aligned}
+$$
+
+```{r salida_t_test_2,  fig.width=5, fig.height=4, fig.cap="Valor del estadístico t sobre un intervalo de confianza del 80 %"}
+# Mostramos graficamente el valor del estadistico T
+plot(x.80)
+```
