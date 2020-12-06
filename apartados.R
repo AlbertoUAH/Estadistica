@@ -76,6 +76,9 @@ library(EnvStats)
 # Calculamos el coeficiente de curtosis
 kurtosis(datos.estatura[, "estatura"])
 
+# Calculo de los deciles
+quantile(datos.estatura[, "estatura"], prob = seq(0,1,length=11))
+
 # Coeficiente de variacion de Pearson
 coef.var.pearson <- desv.tipica / abs(media.aritmetica)
 coef.var.pearson
@@ -175,8 +178,8 @@ contrastar_varianzas(datos.estatura.primeros.15, datos.estatura.ultimos.15, "est
 # ... o bien utilizar la funcion var.test de R
 var.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"])
 
-# Si establecemos el intervalo de confianza a un 70 %...
-var.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], conf.level = 0.80)
+# Si establecemos el intervalo de confianza a un 90 %...
+var.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], conf.level = 0.90)
 
 # Calculo del Intervalo de Confianza (IC)
 # Por defecto, conf.level esta a 0.95
@@ -217,10 +220,10 @@ contrastar_hipotesis(datos.estatura.primeros.15, datos.estatura.ultimos.15, "est
 # Valores obtenidos en t.test
 cat("Valor obtenido en t.test() - t: ", x.95$statistic, ";p-valor:", x.95$p.value, "\n")
 
-# Si modificamos el intervalo de confianza al 80 %...
-x.80 <- t.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], var.equal = TRUE, 
-               conf.level = 0.80)
-x.80
+# Si modificamos el intervalo de confianza al 90 %...
+x.90 <- t.test(datos.estatura.primeros.15[, "estatura"], datos.estatura.ultimos.15[, "estatura"], var.equal = TRUE, 
+               conf.level = 0.90)
+x.90
 
 # Mostramos graficamente el valor del estadistico T
-plot(x.80)
+plot(x.90)
